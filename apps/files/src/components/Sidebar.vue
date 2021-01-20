@@ -2,13 +2,13 @@
   <oc-app-side-bar
     id="files-sidebar"
     :key="highlightedFile.id"
-    class="oc-p-s uk-overflow-auto uk-height-1-1 oc-border-l"
+    class="oc-p-s uk-overflow-auto oc-border-l"
     :disable-action="false"
     @close="close()"
   >
     <template v-if="highlightedFile" slot="title">
       <div class="uk-inline">
-        <oc-icon :name="fileTypeIcon(highlightedFile)" size="xlarge" />
+        <oc-icon :name="resourceIcon" size="xlarge" />
       </div>
       <div class="uk-inline">
         <div class="uk-flex uk-flex-middle">
@@ -19,12 +19,12 @@
           />
         </div>
         <div class="uk-flex uk-flex-middle">
-          <oc-star
+          <oc-icon
             v-if="!publicPage() && isFavoritesEnabled"
             id="files-sidebar-star-icon"
+            :key="highlightedFile.starred ? 'star-shining' : 'star'"
             class="uk-inline oc-mr-xs"
-            :shining="highlightedFile.starred"
-            @click.native.stop="toggleFileFavorite(highlightedFile)"
+            :name="highlightedFile.starred ? 'star' : 'star_border'"
           />
           <template v-if="highlightedFile.size > -1">
             {{ highlightedFile.size | fileSize }},
@@ -68,11 +68,11 @@
 import Mixins from '../mixins'
 import MixinRoutes from '../mixins/routes'
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
+import { getFileExtension, getFileIcon } from '../helpers/resources'
 
 import ActionsAccordion from './Sidebar/ActionsAccordion.vue'
 
 export default {
-  name: 'FileDetails',
   components: {
     ActionsAccordion
   },
@@ -142,6 +142,16 @@ export default {
       }
 
       return null
+    },
+
+    resourceIcon() {
+      if (this.highlightedFile.type === 'folder') {
+        return 'folder'
+      }
+
+      const extension = getFileExtension(this.highlightedFile.name)
+
+      return getFileIcon(extension)
     }
   },
 
@@ -197,3 +207,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+#files-sidebar {
+  position: fixed;
+  top: 60px;
+  right: 0;
+  height: calc(100% - 60px);
+  width: 400px;
+  background-color: white;
+  box-sizing: border-box;
+}
+</style>

@@ -11833,10 +11833,10 @@ vue-events@^3.1.0:
   resolved "https://registry.yarnpkg.com/vue-events/-/vue-events-3.1.0.tgz#8e23121c345b4ff32ee054f9795995f3e344b27d"
   integrity sha512-JoE6ZlIEFdpj/vE7oW6T1T3Vz2h0Zxc4XEyz92L2tiRVc1TZ0u/nY1s6ZrnpHKoVxeEU0ouAp/FMxTKI3JBpvA==
 
-vue-gettext@^2.1.5:
-  version "2.1.10"
-  resolved "https://registry.yarnpkg.com/vue-gettext/-/vue-gettext-2.1.10.tgz#6b5cac9a5ed4502d5c7a59e42c824c9bfbf80d6b"
-  integrity sha512-/CWIgIGgnS1KG10dGcoATcS51DhXfPbstIGJIWmklWC8p7PckDyrQXqx/JpI0cVDoxxv4oDzgs5kitwmXDK/uQ==
+vue-gettext@^2.1.12:
+  version "2.1.12"
+  resolved "https://registry.yarnpkg.com/vue-gettext/-/vue-gettext-2.1.12.tgz#444d3220149b17fa4c7caeded3f12d439b698f33"
+  integrity sha512-7Kw36xtKvARp8ZafQGPK9WR6EM+dhFUikR5f0+etSkiHuvUM3yf1HsRDLYoLLdJ0AMaXxKwgekumzvCk6KX8rA==
 
 vue-hot-reload-api@^2.3.0:
   version "2.3.4"

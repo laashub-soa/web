@@ -6,6 +6,7 @@ import { bitmaskToRole, permissionsBitmask, checkPermission } from '../helpers/c
 import { shareTypes } from '../helpers/shareTypes'
 import path from 'path'
 import SidebarQuota from '../components/SidebarQuota.vue'
+import { buildResource } from '../helpers/resources'
 const { default: PQueue } = require('p-queue')
 
 function _extName(fileName) {
@@ -572,9 +573,9 @@ export default {
 
   loadFiles(context, { currentFolder, files }) {
     if (currentFolder) {
-      currentFolder = _buildFile(currentFolder)
+      currentFolder = buildResource(currentFolder)
     }
-    files = files.map(_buildFile)
+    files = files.map(buildResource)
     context.commit('LOAD_FILES', { currentFolder, files })
   },
   loadDeletedFiles(context, { currentFolder, files }) {
@@ -615,7 +616,7 @@ export default {
         context.commit('FAVORITE_FILE', file)
       })
       .catch(error => {
-        console.log(error)
+        throw new Error(error)
       })
   },
   addFiles(context, payload) {
