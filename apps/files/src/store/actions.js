@@ -1,5 +1,4 @@
 import moment from 'moment'
-import uniqueId from 'lodash/uniqueId'
 import _ from 'lodash'
 import { getParentPaths } from '../helpers/path'
 import { bitmaskToRole, permissionsBitmask, checkPermission } from '../helpers/collaborators'
@@ -17,92 +16,6 @@ function _extName(fileName) {
     ext = ex[0].substr(1)
   }
   return ext
-}
-
-function _buildFile(file) {
-  const ext = file.type !== 'dir' ? _extName(file.name) : ''
-  return {
-    type: file.type === 'dir' ? 'folder' : file.type,
-    // actual file id (string)
-    id: file.fileInfo['{http://owncloud.org/ns}fileid'],
-    // temporary list id, to be used for view only and for uniqueness inside the list
-    viewId: uniqueId('file-'),
-    starred: file.fileInfo['{http://owncloud.org/ns}favorite'] !== '0',
-    mdate: file.fileInfo['{DAV:}getlastmodified'],
-    mdateMoment: moment(file.fileInfo['{DAV:}getlastmodified']),
-    size: (function() {
-      if (file.type === 'dir') {
-        return file.fileInfo['{http://owncloud.org/ns}size']
-      } else {
-        return file.fileInfo['{DAV:}getcontentlength']
-      }
-    })(),
-    extension: (function() {
-      return ext
-    })(),
-    name: (function() {
-      const pathList = file.name.split('/').filter(e => e !== '')
-      return pathList.length === 0 ? '' : pathList[pathList.length - 1]
-    })(),
-    basename: (function() {
-      const pathList = file.name.split('/').filter(e => e !== '')
-      const name = pathList.length === 0 ? '' : pathList[pathList.length - 1]
-      // FIXME: this is really just a view/formatting thing, should better
-      // be processed at render time instead of storing an extra value
-      if (ext) {
-        return name.substring(0, name.length - ext.length - 1)
-      }
-      return name
-    })(),
-    path: file.name,
-    permissions: file.fileInfo['{http://owncloud.org/ns}permissions'] || '',
-    etag: file.fileInfo['{DAV:}getetag'],
-    sharePermissions: file.fileInfo['{http://open-collaboration-services.org/ns}share-permissions'],
-    shareTypes: (function() {
-      let shareTypes = file.fileInfo['{http://owncloud.org/ns}share-types']
-      if (shareTypes) {
-        shareTypes = _.chain(shareTypes)
-          .filter(
-            xmlvalue =>
-              xmlvalue.namespaceURI === 'http://owncloud.org/ns' &&
-              xmlvalue.nodeName.split(':')[1] === 'share-type'
-          )
-          .map(xmlvalue => parseInt(xmlvalue.textContent || xmlvalue.text, 10))
-          .value()
-      }
-      return shareTypes || []
-    })(),
-    privateLink: file.fileInfo['{http://owncloud.org/ns}privatelink'],
-    owner: {
-      username: file.fileInfo['{http://owncloud.org/ns}owner-id'],
-      displayName: file.fileInfo['{http://owncloud.org/ns}owner-display-name']
-    },
-    canUpload: function() {
-      return this.permissions.indexOf('C') >= 0
-    },
-    canDownload: function() {
-      return this.type !== 'folder'
-    },
-    canBeDeleted: function() {
-      return this.permissions.indexOf('D') >= 0
-    },
-    canRename: function() {
-      return this.permissions.indexOf('N') >= 0
-    },
-    canShare: function() {
-      return this.permissions.indexOf('R') >= 0
-    },
-    canCreate: function() {
-      return this.permissions.indexOf('C') >= 0
-    },
-    isMounted: function() {
-      return this.permissions.indexOf('M') >= 0
-    },
-    isReceivedShare: function() {
-      return this.permissions.indexOf('S') >= 0
-    },
-    isChunkedUploadSupported: !!(file.getTusSupport && file.getTusSupport())
-  }
 }
 
 function _buildFileInTrashbin(file) {
@@ -1084,8 +997,8 @@ export default {
     commit('CLEAR_RESOURCES_TO_DELETE_LIST')
   },
 
-  loadIndicators({ dispatch, commit }, { client, currentFolder }) {
-    dispatch('loadSharesTree', { client, path: currentFolder })
+  async loadIndicators({ dispatch, commit }, { client, currentFolder }) {
+    await dispatch('loadSharesTree', { client, path: currentFolder })
     commit('LOAD_INDICATORS')
   }
 }
